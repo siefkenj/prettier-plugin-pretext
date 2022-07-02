@@ -5,20 +5,34 @@
     "main": "dist/plugin.js",
     "scripts": {
         "lint": "eslint --cache .",
-        "build": "tsc -p tsconfig.build.json",
+        "build": "tsc -p tsconfig.build.json && node build.mjs",
         "print": "prettier --plugin=.",
         "test": "jest"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/prettier/plugin-xml.git"
+        "url": "git+https://github.com/siefkenj/prettier-plugin-pretext.git"
     },
-    "author": "Kevin Newton",
+    "files": [
+        "dist/**/*"
+    ],
+    "exports": {
+        ".": {
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        },
+        "./*js": "./dist/*js",
+        "./*": {
+            "import": "./dist/*.mjs",
+            "require": "./dist/*.cjs"
+        }
+    },
+    "author": "Kevin Newton, Jason Siefken",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/prettier/plugin-xml/issues"
+        "url": "https://github.com/siefkenj/prettier-plugin-pretext/issues"
     },
-    "homepage": "https://github.com/prettier/plugin-xml#readme",
+    "homepage": "https://github.com/siefkenj/prettier-plugin-pretext#readme",
     "dependencies": {
         "@xml-tools/parser": "^1.0.11",
         "prettier": ">=2.4.0"
@@ -29,6 +43,7 @@
         "@types/prettier": "^2.3.0",
         "@typescript-eslint/eslint-plugin": "^5.16.0",
         "@typescript-eslint/parser": "^5.16.0",
+        "esbuild": "^0.14.48",
         "eslint": "^8.5.0",
         "eslint-config-prettier": "^8.0.0",
         "jest": "^28.1.0",
