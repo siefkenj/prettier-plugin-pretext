@@ -11,6 +11,17 @@ import type {
     PrologCstNode,
 } from "@xml-tools/parser";
 
+export type Fragment = {
+    offset: number;
+    printed: Doc;
+    startLine?: number;
+    endLine?: number;
+    endOffset?: number;
+    nodeType?: "element" | "text";
+    tagName?: string | null;
+};
+
+
 // Override the children property of the content CST node because it is missing
 // the PROCESSING_INSTRUCTION property.
 interface ContentCstNodeExt extends Omit<ContentCstNode, "children"> {

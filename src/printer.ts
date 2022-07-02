@@ -1,9 +1,24 @@
 import { builders } from "prettier/doc";
 import embed from "./embed";
-import type { ContentCstNode, Doc, IToken, Path, Printer } from "./types";
+import { printChildrenWhenWhitespaceDoesNotMatter } from "./print-children";
+import { printIToken } from "./print-utils";
+import type {
+    ContentCstNode,
+    Doc,
+    Fragment,
+    IToken,
+    Path,
+    Printer,
+} from "./types";
 
 const { fill, group, hardline, indent, join, line, literalline, softline } =
     builders;
+
+import {
+    BREAK_AROUND_ELEMENTS,
+    PAR_ELEMENTS,
+    PRE_ELEMENTS,
+} from "./pretext/special-nodes";
 
 const ignoreStartComment = "<!-- prettier-ignore-start -->";
 const ignoreEndComment = "<!-- prettier-ignore-end -->";
@@ -31,24 +46,6 @@ function isWhitespaceIgnorable(node: ContentCstNode) {
     const { CData, Comment, reference } = node.children;
 
     return !CData && !reference && !hasIgnoreRanges(Comment);
-}
-
-type Fragment = {
-    offset: number;
-    printed: Doc;
-    startLine?: number;
-    endLine?: number;
-};
-
-function printIToken(path: Path<IToken>): Fragment {
-    const node = path.getValue();
-
-    return {
-        offset: node.startOffset,
-        startLine: node.startLine,
-        endLine: node.endLine,
-        printed: node.image,
-    };
 }
 
 function replaceNewlinesWithLiteralLines(content: string) {
@@ -260,13 +257,14 @@ const printer: Printer = {
 
                 fragments.sort((left, right) => left.offset - right.offset);
 
-                return [
+                const ret = [
                     join(
                         hardline,
                         fragments.map(({ printed }) => printed)
                     ),
                     hardline,
                 ];
+                return ret;
             }
             case "element": {
                 const {
@@ -280,6 +278,7 @@ const printer: Printer = {
                     END,
                     SLASH_CLOSE,
                 } = node.children;
+                const tagName = Name[0].image.trim();
 
                 const parts: Doc[] = [OPEN[0].image, Name[0].image];
 
@@ -312,7 +311,7 @@ const printer: Printer = {
 
                 const openTag = group([
                     ...parts,
-                    opts.bracketSameLine ? "" : softline,
+                    attribute ? softline : "",
                     START_CLOSE[0].image,
                 ]);
 
@@ -322,94 +321,38 @@ const printer: Printer = {
                     END[0].image,
                 ]);
 
+                if (PRE_ELEMENTS.has(tagName)) {
+                    // Elements that assume preformatted content should be printed verbatim
+                    // to preserve all whitespace exactly. Even if there is an XML element as a child,
+                    // we still want to print them exactly.
+                    const startOffset = START_CLOSE[0].endOffset! + 1;
+                    const endOffset = SLASH_OPEN[0].startOffset - 1;
+
+                    const originalText = opts.originalText.slice(
+                        startOffset,
+                        endOffset
+                    );
+                    // By replacing `\n` with `literalline`, we enable Prettier to accurately compute line lengths.
+                    const verbDoc: Doc[] = originalText
+                        .split(/(\n)/g)
+                        .map((t) => (t === "\n" ? literalline : t));
+                    return group([openTag, verbDoc, closeTag]);
+                }
+
                 if (
-                    opts.xmlWhitespaceSensitivity === "ignore" &&
+                    //  opts.xmlWhitespaceSensitivity === "ignore" &&
                     isWhitespaceIgnorable(content[0])
                 ) {
-                    const nodePath = path as Path<typeof node>;
+                    const inParMode = PAR_ELEMENTS.has(tagName);
 
-                    const fragments = nodePath.call(
-                        (childrenPath) => {
-                            const children = childrenPath.getValue();
-                            let response: Fragment[] = [];
-
-                            if (children.Comment) {
-                                response = response.concat(
-                                    childrenPath.map(printIToken, "Comment")
-                                );
-                            }
-
-                            if (children.chardata) {
-                                childrenPath.each((charDataPath) => {
-                                    const chardata = charDataPath.getValue();
-                                    if (!chardata.children.TEXT) {
-                                        return;
-                                    }
-
-                                    const content =
-                                        chardata.children.TEXT[0].image.trim();
-                                    const printed = group(
-                                        content.split(/(\n)/g).map((value) => {
-                                            if (value === "\n") {
-                                                return literalline;
-                                            }
-
-                                            return fill(
-                                                value
-                                                    .split(/\b( +)\b/g)
-                                                    .map((segment, index) =>
-                                                        index % 2 === 0
-                                                            ? segment
-                                                            : line
-                                                    )
-                                            );
-                                        })
-                                    );
-
-                                    const location = chardata.location!;
-                                    response.push({
-                                        offset: location.startOffset,
-                                        startLine: location.startLine,
-                                        endLine: location.endLine!,
-                                        printed,
-                                    });
-                                }, "chardata");
-                            }
-
-                            if (children.element) {
-                                response = response.concat(
-                                    childrenPath.map((elementPath) => {
-                                        const location =
-                                            elementPath.getValue().location!;
-
-                                        return {
-                                            offset: location.startOffset,
-                                            startLine: location.startLine,
-                                            endLine: location.endLine!,
-                                            printed: print(elementPath),
-                                        };
-                                    }, "element")
-                                );
-                            }
-
-                            if (children.PROCESSING_INSTRUCTION) {
-                                response = response.concat(
-                                    childrenPath.map(
-                                        printIToken,
-                                        "PROCESSING_INSTRUCTION"
-                                    )
-                                );
-                            }
-
-                            return response;
-                        },
-                        "children",
-                        "content",
-                        0,
-                        "children"
+                    const fragments = printChildrenWhenWhitespaceDoesNotMatter(
+                        path,
+                        print
                     );
 
-                    fragments.sort((left, right) => left.offset - right.offset);
+                    if (fragments.length === 0) {
+                        return group([...parts, space, "/>"]);
+                    }
 
                     // If the only content of this tag is chardata, then use a softline so
                     // that we won't necessarily break (to allow <foo>bar</foo>).
@@ -427,25 +370,68 @@ const printer: Printer = {
                         ]);
                     }
 
-                    if (fragments.length === 0) {
-                        return group([...parts, space, "/>"]);
-                    }
+                    //const docs: Doc[] = [];
 
-                    const docs: Doc[] = [];
-                    let lastLine: number = fragments[0].startLine!;
-
-                    fragments.forEach((node) => {
-                        if (node.startLine! - lastLine >= 2) {
-                            docs.push(hardline, hardline);
-                        } else {
-                            docs.push(hardline);
+                    const docs: Doc[] = fragments.flatMap((node, i) => {
+                        const tagName = node.tagName;
+                        const prevNode = fragments[i - 1];
+                        if (!prevNode) {
+                            return [softline, node.printed];
                         }
 
-                        docs.push(node.printed);
-                        lastLine = node.endLine!;
+                        // If there is a blank line, we preserve it
+                        if (node.startLine! - prevNode.endLine! >= 2) {
+                            if (
+                                BREAK_AROUND_ELEMENTS.has(
+                                    prevNode.tagName || ""
+                                )
+                            ) {
+                                // If the previous node was a break-around node, it already placed a hardline,
+                                // so we don't need to place an additional line.
+                                return [hardline, node.printed];
+                            }
+                            return [hardline, hardline, node.printed];
+                        }
+
+                        // If we immediately follow the previous node, don't insert any newlines if
+                        // we are in par mode. This allows for things like `<m>x</m>.` where the period
+                        // stays tight against the `</m>`.
+                        if (
+                            inParMode &&
+                            !BREAK_AROUND_ELEMENTS.has(tagName || "") &&
+                            node.offset - prevNode.endOffset! <= 1
+                        ) {
+                            return [node.printed];
+                        }
+
+                        if (BREAK_AROUND_ELEMENTS.has(tagName || "")) {
+                            return [hardline, node.printed, hardline];
+                        }
+
+                        // If the previous node was a break-around node, it already placed a hardline,
+                        // so we don't need to place an additional line.
+                        return BREAK_AROUND_ELEMENTS.has(prevNode.tagName || "")
+                            ? [node.printed]
+                            : [line, node.printed];
                     });
 
-                    return group([openTag, indent(docs), hardline, closeTag]);
+                    if (inParMode) {
+                        return group([
+                            openTag,
+                            indent([softline, fill(docs)]),
+                            softline,
+                            closeTag,
+                        ]);
+                    }
+
+                    const ret = group([
+                        openTag,
+                        indent(docs),
+                        hardline,
+                        closeTag,
+                    ]);
+
+                    return ret;
                 }
 
                 return group([
