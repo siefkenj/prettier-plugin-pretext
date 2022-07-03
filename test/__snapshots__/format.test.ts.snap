@@ -2,6 +2,34 @@
 
 exports[`basic pretext source 1`] = `
 "<section>
+	<cline>abc(foo)</cline>
+	<li xml:id=\\"list-two-two-two-three\\">
+		<title>Title on xref'ed list item</title>
+		<p>Level 4, third.</p>
+	</li>
+	<subsection>
+		<abstract>
+			<p>
+				This is a sample of many of the things you can do with <pretext />.
+				Sometimes the math makes sense, sometimes it seems to be written
+				in the first person, sort of like this Abstract.
+			</p>
+		</abstract>
+	</subsection>
+	<macros>
+		\\\\newcommand{\\\\definiteintegral}[4]{\\\\int_{#1}^{#2}\\\\,#3\\\\,d#4} % this comment will be stripped
+		\\\\newcommand{\\\\myequation}[2]{#1\\\\amp =#2} % testing alignment override
+		% comments anywhere get stripped, with or without faux % comment \\\\% characters
+		\\\\newcommand{\\\\indefiniteintegral}[2]{\\\\int#1\\\\,d#2}
+		\\\\newcommand{\\\\testingescapedpercent}{ \\\\% } % just testing
+	</macros>
+	<macros>\\\\newcommand{\\\\definiteintegral}[4]{\\\\int_{#1}   }</macros>
+</section>
+"
+`;
+
+exports[`basic pretext source 2 1`] = `
+"<section>
 	<p>A video is a <br /> natural way to</p>
 	<p>
 		A video is a natural <br /> way to enhance a document when rendered in
@@ -20,19 +48,18 @@ exports[`basic pretext source 1`] = `
 	</p>
 	<sage>
 		<output>fjdklsafjlkdjlkflk  fdjal f fjdlasjlf
-     jfdajldlsldk fjlkfajslfjllkadkf                ba</output>
+     jfdajldlsldk fjlkfajslfjllkadkf                baz</output>
 		<input>
                 A = matrix(4,5, srange(20)) <br />a really really really long line i think that it is long<br />
                  A.rref()
-   </input>
+    </input>
 	</sage>
 	<p>
 		fun times
 		<ul>
 			<li>foo</li>
 			<li>bar</li>
-		</ul>
-		with list
+		</ul>with list
 	</p>
 	<p>
 		fun times
@@ -331,13 +358,11 @@ use {
 			cy=\\"50\\"
 			cx=\\"50\\"
 			r=\\"40\\"
-			stroke-width=\\"20\\"
-		/>
+			stroke-width=\\"20\\" />
 	</g>
 	<use
 		xlink:href=\\"#c\\"
-		x=\\"100\\"
-	/>
+		x=\\"100\\" />
 	<ignored>
     <!-- prettier-ignore-start -->
       <   ignored   />

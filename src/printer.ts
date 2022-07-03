@@ -1,7 +1,7 @@
 import { builders } from "prettier/doc";
 import embed from "./embed";
 import { printChildrenWhenWhitespaceDoesNotMatter } from "./print-children";
-import { printIToken } from "./print-utils";
+import { isFragment, printIToken } from "./print-utils";
 import type {
     ContentCstNode,
     Doc,
@@ -11,17 +11,34 @@ import type {
     Printer,
 } from "./types";
 
-const { fill, group, hardline, indent, join, line, literalline, softline } =
-    builders;
+const {
+    fill,
+    group,
+    hardline,
+    indent,
+    join,
+    line,
+    literalline,
+    softline,
+    breakParent,
+} = builders;
 
 import {
     BREAK_AROUND_ELEMENTS,
+    INDENTABLE_PRE_ELEMENTS,
     PAR_ELEMENTS,
     PRE_ELEMENTS,
 } from "./pretext/special-nodes";
+import { indentablePreToLines } from "./indentible-pre";
 
 const ignoreStartComment = "<!-- prettier-ignore-start -->";
 const ignoreEndComment = "<!-- prettier-ignore-end -->";
+
+function isLine(
+    item: any
+): item is typeof line | typeof hardline | typeof softline {
+    return item === line || item === hardline || item === softline;
+}
 
 function hasIgnoreRanges(comments: IToken[]) {
     if (!comments || comments.length === 0) {
@@ -302,7 +319,7 @@ const printer: Printer = {
                 const space: Doc = line;
 
                 if (SLASH_CLOSE) {
-                    return group([...parts, space, SLASH_CLOSE[0].image]);
+                    return group([...parts, " ", SLASH_CLOSE[0].image]);
                 }
 
                 if (Object.keys(content[0].children).length === 0) {
@@ -330,7 +347,7 @@ const printer: Printer = {
 
                     const originalText = opts.originalText.slice(
                         startOffset,
-                        endOffset
+                        endOffset + 1
                     );
                     // By replacing `\n` with `literalline`, we enable Prettier to accurately compute line lengths.
                     const verbDoc: Doc[] = originalText
@@ -339,10 +356,28 @@ const printer: Printer = {
                     return group([openTag, verbDoc, closeTag]);
                 }
 
-                if (
-                    //  opts.xmlWhitespaceSensitivity === "ignore" &&
-                    isWhitespaceIgnorable(content[0])
-                ) {
+                if (INDENTABLE_PRE_ELEMENTS.has(tagName)) {
+                    const startOffset = START_CLOSE[0].endOffset! + 1;
+                    const endOffset = SLASH_OPEN[0].startOffset - 1;
+
+                    const originalText = opts.originalText.slice(
+                        startOffset,
+                        endOffset
+                    );
+                    // By replacing `\n` with `literalline`, we enable Prettier to accurately compute line lengths.
+                    const verbDoc: Doc = join(
+                        hardline,
+                        indentablePreToLines(originalText, opts.tabWidth)
+                    );
+                    return group([
+                        openTag,
+                        indent([softline, verbDoc]),
+                        softline,
+                        closeTag,
+                    ]);
+                }
+
+                if (isWhitespaceIgnorable(content[0])) {
                     const inParMode = PAR_ELEMENTS.has(tagName);
 
                     const fragments = printChildrenWhenWhitespaceDoesNotMatter(
@@ -370,50 +405,73 @@ const printer: Printer = {
                         ]);
                     }
 
-                    //const docs: Doc[] = [];
-
-                    const docs: Doc[] = fragments.flatMap((node, i) => {
-                        const tagName = node.tagName;
-                        const prevNode = fragments[i - 1];
-                        if (!prevNode) {
-                            return [softline, node.printed];
-                        }
-
-                        // If there is a blank line, we preserve it
-                        if (node.startLine! - prevNode.endLine! >= 2) {
-                            if (
-                                BREAK_AROUND_ELEMENTS.has(
-                                    prevNode.tagName || ""
-                                )
-                            ) {
-                                // If the previous node was a break-around node, it already placed a hardline,
-                                // so we don't need to place an additional line.
-                                return [hardline, node.printed];
+                    const docsAndFrags: (Doc | Fragment)[] = fragments.flatMap(
+                        ((node, i) => {
+                            const tagName = node.tagName;
+                            const prevNode = fragments[i - 1];
+                            if (!prevNode) {
+                                return [softline, node];
                             }
-                            return [hardline, hardline, node.printed];
-                        }
 
-                        // If we immediately follow the previous node, don't insert any newlines if
-                        // we are in par mode. This allows for things like `<m>x</m>.` where the period
-                        // stays tight against the `</m>`.
+                            // If there is a blank line, we preserve it
+                            if (node.startLine! - prevNode.endLine! >= 2) {
+                                return [hardline, hardline, node];
+                            }
+
+                            // If we immediately follow the previous node, don't insert any newlines if
+                            // we are in par mode. This allows for things like `<m>x</m>.` where the period
+                            // stays tight against the `</m>`.
+                            if (
+                                inParMode &&
+                                !BREAK_AROUND_ELEMENTS.has(tagName || "") &&
+                                node.offset - prevNode.endOffset! <= 1
+                            ) {
+                                return [node];
+                            }
+
+                            if (BREAK_AROUND_ELEMENTS.has(tagName || "")) {
+                                return [node];
+                            }
+
+                            // If the previous node was a break-around node, it already placed a hardline,
+                            // so we don't need to place an additional line.
+                            return [line, node.printed];
+                        }) as (node: Fragment, i: number) => (Fragment | Doc)[]
+                    );
+
+                    let prevItem: Doc | Fragment | undefined;
+                    const docsAndFragsWithLines: (Doc | Fragment)[] = [];
+
+                    // Make sure that every break-around fragment is preceded by a hardline
+                    for (const item of docsAndFrags) {
+                        if (!prevItem) {
+                            docsAndFragsWithLines.push(item);
+                            prevItem = item;
+                            continue;
+                        }
                         if (
-                            inParMode &&
-                            !BREAK_AROUND_ELEMENTS.has(tagName || "") &&
-                            node.offset - prevNode.endOffset! <= 1
+                            isFragment(item) &&
+                            BREAK_AROUND_ELEMENTS.has(item.tagName || "")
                         ) {
-                            return [node.printed];
+                            if (isLine(prevItem)) {
+                                if (prevItem === line) {
+                                    docsAndFragsWithLines.pop();
+                                    docsAndFragsWithLines.push(hardline);
+                                }
+                            } else {
+                                docsAndFragsWithLines.push(hardline);
+                            }
+                            docsAndFragsWithLines.push(item);
+                            prevItem = item;
+                            continue;
                         }
+                        docsAndFragsWithLines.push(item);
+                        prevItem = item;
+                    }
 
-                        if (BREAK_AROUND_ELEMENTS.has(tagName || "")) {
-                            return [hardline, node.printed, hardline];
-                        }
-
-                        // If the previous node was a break-around node, it already placed a hardline,
-                        // so we don't need to place an additional line.
-                        return BREAK_AROUND_ELEMENTS.has(prevNode.tagName || "")
-                            ? [node.printed]
-                            : [line, node.printed];
-                    });
+                    const docs: Doc[] = docsAndFragsWithLines.map((item) =>
+                        isFragment(item) ? item.printed : item
+                    );
 
                     if (inParMode) {
                         return group([

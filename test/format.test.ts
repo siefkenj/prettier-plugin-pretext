@@ -6,6 +6,10 @@ import { Options } from "../src/types";
 import plugin from "../src/plugin";
 
 const fixture = fs.readFileSync(path.join(__dirname, "./fixture.ptx"), "utf-8");
+const example = fs.readFileSync(
+    path.join(__dirname, "./example.ptx"),
+    "utf-8"
+);
 const example2 = fs.readFileSync(
     path.join(__dirname, "./example2.ptx"),
     "utf-8"
@@ -25,6 +29,12 @@ test("defaults", () => {
 });
 
 test("basic pretext source", () => {
+    const formatted = format(example);
+    expect(formatted).toMatchSnapshot();
+});
+
+
+test("basic pretext source 2", () => {
     const formatted = format(example2);
     expect(formatted).toMatchSnapshot();
 });

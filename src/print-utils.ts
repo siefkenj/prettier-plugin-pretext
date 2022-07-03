@@ -11,3 +11,10 @@ export function printIToken(path: Path<IToken>): Fragment {
         endOffset: node.endOffset,
     };
 }
+
+export function isFragment(item: any): item is Fragment {
+    if (typeof item === "object" && item.offset != null) {
+        return true;
+    }
+    return false;
+}
