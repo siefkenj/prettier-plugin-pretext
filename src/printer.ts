@@ -299,7 +299,7 @@ const printer: Printer = {
 
                 // Determine the value that will go between the <, name, and attributes
                 // of an element and the /> of an element.
-                const space: Doc = opts.xmlSelfClosingSpace ? line : softline;
+                const space: Doc = line;
 
                 if (SLASH_CLOSE) {
                     return group([...parts, space, SLASH_CLOSE[0].image]);

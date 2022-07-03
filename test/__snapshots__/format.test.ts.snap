@@ -2,15 +2,15 @@
 
 exports[`basic pretext source 1`] = `
 "<section>
-	<p>A video is a <br/> natural way to</p>
+	<p>A video is a <br /> natural way to</p>
 	<p>
-		A video is a natural <br/> way to enhance a document when rendered in an
-		electronic format, such as HTML web pages. It might be additional
+		A video is a natural <br /> way to enhance a document when rendered in
+		an electronic format, such as HTML web pages. It might be additional
 		information that is hard to communicate with text (marine invertebrates
 		swimming), a
 	</p>
 	<p>
-		Some <trademark/> text <m>math and stuff</m>. and
+		Some <trademark /> text <m>math and stuff</m>. and
 		<ul>
 			<li>foo</li>
 			<li>bar</li>
@@ -70,8 +70,8 @@ exports[`bracketSameLine => true 1`] = `
   </desc>
 	<?pagebreak?>
 
-	<style/>
-	<style/>
+	<style />
+	<style />
 	<style type=\\"text/css\\">
 circle {
 	stroke-opacity: 0.7;
@@ -95,9 +95,9 @@ use {
 
 	<?pagebreak?>
 	<g class=\\"special\\" style=\\"fill: blue\\">
-		<circle id=\\"c\\" cy=\\"50\\" cx=\\"50\\" r=\\"40\\" stroke-width=\\"20\\"/>
+		<circle id=\\"c\\" cy=\\"50\\" cx=\\"50\\" r=\\"40\\" stroke-width=\\"20\\" />
 	</g>
-	<use xlink:href=\\"#c\\" x=\\"100\\"/>
+	<use xlink:href=\\"#c\\" x=\\"100\\" />
 	<ignored>
     <!-- prettier-ignore-start -->
       <   ignored   />
@@ -116,7 +116,7 @@ use {
 
 	<div>
 		even more
-		<content/>
+		<content />
 	</div>
 </svg>
 <!-- bar -->
@@ -146,8 +146,8 @@ exports[`bracketSameLine => true, xmlSelfClosingSpace => false 1`] = `
   </desc>
 	<?pagebreak?>
 
-	<style/>
-	<style/>
+	<style />
+	<style />
 	<style type=\\"text/css\\">
 circle {
 	stroke-opacity: 0.7;
@@ -171,9 +171,9 @@ use {
 
 	<?pagebreak?>
 	<g class=\\"special\\" style=\\"fill: blue\\">
-		<circle id=\\"c\\" cy=\\"50\\" cx=\\"50\\" r=\\"40\\" stroke-width=\\"20\\"/>
+		<circle id=\\"c\\" cy=\\"50\\" cx=\\"50\\" r=\\"40\\" stroke-width=\\"20\\" />
 	</g>
-	<use xlink:href=\\"#c\\" x=\\"100\\"/>
+	<use xlink:href=\\"#c\\" x=\\"100\\" />
 	<ignored>
     <!-- prettier-ignore-start -->
       <   ignored   />
@@ -192,7 +192,7 @@ use {
 
 	<div>
 		even more
-		<content/>
+		<content />
 	</div>
 </svg>
 <!-- bar -->
@@ -222,8 +222,8 @@ exports[`defaults 1`] = `
   </desc>
 	<?pagebreak?>
 
-	<style/>
-	<style/>
+	<style />
+	<style />
 	<style type=\\"text/css\\">
 circle {
 	stroke-opacity: 0.7;
@@ -247,9 +247,9 @@ use {
 
 	<?pagebreak?>
 	<g class=\\"special\\" style=\\"fill: blue\\">
-		<circle id=\\"c\\" cy=\\"50\\" cx=\\"50\\" r=\\"40\\" stroke-width=\\"20\\"/>
+		<circle id=\\"c\\" cy=\\"50\\" cx=\\"50\\" r=\\"40\\" stroke-width=\\"20\\" />
 	</g>
-	<use xlink:href=\\"#c\\" x=\\"100\\"/>
+	<use xlink:href=\\"#c\\" x=\\"100\\" />
 	<ignored>
     <!-- prettier-ignore-start -->
       <   ignored   />
@@ -268,7 +268,7 @@ use {
 
 	<div>
 		even more
-		<content/>
+		<content />
 	</div>
 </svg>
 <!-- bar -->
@@ -298,8 +298,8 @@ exports[`singleAttributePerLine => true 1`] = `
   </desc>
 	<?pagebreak?>
 
-	<style/>
-	<style/>
+	<style />
+	<style />
 	<style type=\\"text/css\\">
 circle {
 	stroke-opacity: 0.7;
@@ -356,7 +356,7 @@ use {
 
 	<div>
 		even more
-		<content/>
+		<content />
 	</div>
 </svg>
 <!-- bar -->
@@ -386,8 +386,8 @@ exports[`xmlSelfClosingSpace => false 1`] = `
   </desc>
 	<?pagebreak?>
 
-	<style/>
-	<style/>
+	<style />
+	<style />
 	<style type=\\"text/css\\">
 circle {
 	stroke-opacity: 0.7;
@@ -411,9 +411,9 @@ use {
 
 	<?pagebreak?>
 	<g class=\\"special\\" style=\\"fill: blue\\">
-		<circle id=\\"c\\" cy=\\"50\\" cx=\\"50\\" r=\\"40\\" stroke-width=\\"20\\"/>
+		<circle id=\\"c\\" cy=\\"50\\" cx=\\"50\\" r=\\"40\\" stroke-width=\\"20\\" />
 	</g>
-	<use xlink:href=\\"#c\\" x=\\"100\\"/>
+	<use xlink:href=\\"#c\\" x=\\"100\\" />
 	<ignored>
     <!-- prettier-ignore-start -->
       <   ignored   />
@@ -432,7 +432,7 @@ use {
 
 	<div>
 		even more
-		<content/>
+		<content />
 	</div>
 </svg>
 <!-- bar -->
