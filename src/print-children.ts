@@ -7,7 +7,8 @@ const { fill, group, hardline, indent, join, line, literalline, softline } =
 
 /**
  * Prints the children of `path` but trims whitespace from the start/end and collapses
- * contiguous whitespace into a single char.
+ * contiguous whitespace into a single char.  Inserts `line` between words, and `hardline`
+ * after sentence-ending punctuation (.!?).
  */
 export function printChildrenWhenWhitespaceDoesNotMatter(
     path: Path<AnyNode>,
@@ -40,8 +41,11 @@ export function printChildrenWhenWhitespaceDoesNotMatter(
                     const trailingWhitespace = rawText.match(/\s*$/)![0].length;
                     const content = rawText.trim();
                     const printed = fill(
-                        content.split(/(\s+)/g).map((value) => {
-                            if (value.match(/\s+/)) {
+                        content.split(/(\s+|[.!?]\s+)/g).map((value) => {
+                            if (value.match(/[.!?]\s+/)) {
+                                // This will put a linebreak after any sentence-ending punctuation in chardata.
+                                return [value.trim(), hardline];
+                            } else if (value.match(/\s+/)) {
                                 return line;
                             }
                             return value;

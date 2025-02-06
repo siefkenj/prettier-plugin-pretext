@@ -386,11 +386,13 @@ const printer: Printer = {
                     );
 
                     if (fragments.length === 0) {
-                        return group([...parts, space, "/>"]);
+
+                        return group([...parts, "/>"]);
                     }
 
                     // If the only content of this tag is chardata, then use a softline so
                     // that we won't necessarily break (to allow <foo>bar</foo>).
+                    // Actually, don't add any new lines here:
                     if (
                         fragments.length === 1 &&
                         (content[0].children.chardata || []).filter(
@@ -399,8 +401,7 @@ const printer: Printer = {
                     ) {
                         return group([
                             openTag,
-                            indent([softline, fragments[0].printed]),
-                            softline,
+                            [fragments[0].printed],
                             closeTag,
                         ]);
                     }
@@ -461,7 +462,7 @@ const printer: Printer = {
                             } else {
                                 docsAndFragsWithLines.push(hardline);
                             }
-                            docsAndFragsWithLines.push(item);
+                            docsAndFragsWithLines.push(item, hardline);
                             prevItem = item;
                             continue;
                         }
@@ -534,7 +535,13 @@ const printer: Printer = {
                 }
 
                 const space = opts.xmlSelfClosingSpace ? line : softline;
-                return group([...parts, space, SPECIAL_CLOSE[0].image]);
+                // Added hardline to separate the prolog from the content
+                return [group([...parts, space, SPECIAL_CLOSE[0].image]), hardline];
+            }
+
+            default: {
+                console.log("default", node);
+                throw new Error("Unknown node type: " + (node as any).name);
             }
         }
     },
