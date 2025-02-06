@@ -21,8 +21,9 @@ const plugin: Plugin = {
     options: {},
     defaultOptions: {
         printWidth: 80,
-        tabWidth: 4,
-        useTabs: true,
+        tabWidth: 2,
+        useTabs: false,
+        singleAttributePerLine: false,
     },
 };
 

@@ -26,12 +26,14 @@ export const PAR_ELEMENTS = new Set([
     "idx",
     "h",
     "description",
+    "shortdescription",
     "caption",
     "cell",
     "q",
-    "em",
     "title",
     "pubtitle",
+    "fn",
+    "me",
 ]);
 /**
  * Elements which should be on their own line even in paragraph mode.
@@ -40,7 +42,6 @@ export const BREAK_AROUND_ELEMENTS = new Set([
     "ol",
     "ul",
     "dl",
-    "p",
     "q",
     "title",
     "pubtitle",
