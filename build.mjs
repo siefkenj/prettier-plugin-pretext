@@ -8,7 +8,7 @@ import esbuild from "esbuild";
         minify: false,
         sourcemap: true,
         format: "esm",
-        target: "node14",
+        target: "node18",
         //plugins: [nodeExternalsPlugin()],
      //   external: [...explicitDeps],
     };
