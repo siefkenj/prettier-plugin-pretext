@@ -36,11 +36,10 @@
     "homepage": "https://github.com/siefkenj/prettier-plugin-pretext#readme",
     "dependencies": {
         "@xml-tools/parser": "^1.0.11",
-        "prettier": ">=2.4.0"
+        "prettier": ">=3.5.3"
     },
     "devDependencies": {
         "@types/node": "^22.15.17",
-        "@types/prettier": "^2.7.3",
         "esbuild": "^0.25.4",
         "eslint": "^9.26.0",
         "eslint-config-prettier": "^10.1.5",
