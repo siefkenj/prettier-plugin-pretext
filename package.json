@@ -1,6 +1,6 @@
 {
     "name": "prettier-plugin-pretext",
-    "version": "1.0.4",
+    "version": "2.0.0",
     "description": "A Prettier plugin for PreTeXt XML",
     "main": "dist/plugin.js",
     "scripts": {
