@@ -24,7 +24,7 @@ const example4 = fs.readFileSync(
     "utf-8"
 );
 
-function format(content: string, opts: Partial<Options> = {}) {
+async function format(content: string, opts: Partial<Options> = {}) {
     return prettier.format(content, {
         ...opts,
         parser: "ptx",
@@ -32,41 +32,41 @@ function format(content: string, opts: Partial<Options> = {}) {
     });
 }
 
-test("defaults", () => {
-    const formatted = format(fixture);
+test("defaults", async () => {
+    const formatted = await format(fixture);
     expect(formatted).toMatchSnapshot();
 });
 
-test("basic pretext source", () => {
-    const formatted = format(example);
-    expect(formatted).toMatchSnapshot();
-});
-
-
-test("basic pretext source 2", () => {
-    const formatted = format(example2);
+test("basic pretext source", async () => {
+    const formatted = await format(example);
     expect(formatted).toMatchSnapshot();
 });
 
 
-test("bracketSameLine => true", () => {
-    const formatted = format(fixture, {
+test("basic pretext source 2", async () => {
+    const formatted = await format(example2);
+    expect(formatted).toMatchSnapshot();
+});
+
+
+test("bracketSameLine => true", async () => {
+    const formatted = await format(fixture, {
         bracketSameLine: true,
     });
 
     expect(formatted).toMatchSnapshot();
 });
 
-test("xmlSelfClosingSpace => false", () => {
-    const formatted = format(fixture, {
+test("xmlSelfClosingSpace => false", async () => {
+    const formatted =await format(fixture, {
         xmlSelfClosingSpace: false,
     });
 
     expect(formatted).toMatchSnapshot();
 });
 
-test("bracketSameLine => true, xmlSelfClosingSpace => false", () => {
-    const formatted = format(fixture, {
+test("bracketSameLine => true, xmlSelfClosingSpace => false", async () => {
+    const formatted = await format(fixture, {
         bracketSameLine: true,
         xmlSelfClosingSpace: false,
     });
@@ -74,21 +74,21 @@ test("bracketSameLine => true, xmlSelfClosingSpace => false", () => {
     expect(formatted).toMatchSnapshot();
 });
 
-test("singleAttributePerLine => true", () => {
-    const formatted = format(fixture, {
+test("singleAttributePerLine => true", async () => {
+    const formatted = await format(fixture, {
         singleAttributePerLine: true,
     });
 
     expect(formatted).toMatchSnapshot();
 });
 
-test("example3", () => {
-    const formatted = format(example3);
+test("example3", async () => {
+    const formatted = await format(example3);
     expect(formatted).toMatchSnapshot();
 });
 
-test("new", () => {
-    const formatted = format(example4);
+test("new", async  () => {
+    const formatted = await format(example4);
     expect(formatted).toMatchSnapshot();
 });
 

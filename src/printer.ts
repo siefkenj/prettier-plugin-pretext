@@ -72,7 +72,6 @@ function replaceNewlinesWithLiteralLines(content: string) {
 }
 
 const printer: Printer = {
-    embed,
     print(path, opts, print) {
         const node = path.getValue();
 

@@ -105,18 +105,8 @@ exports[`bracketSameLine => true 1`] = `
 
   <style />
   <style/>
-  <style type="text/css">
-circle {
-  stroke-opacity: 0.7;
-}
-.special circle {
-  stroke: green;
-}
-use {
-  stroke: purple;
-  fill: orange;
-}
-  </style>
+  <style type="text/css">circle { stroke-opacity: 0.7; } .special circle {
+  stroke: green; } use { stroke: purple; fill: orange; }</style>
 
   <yaml
     myveryveryveryverylongattributename="myveryveryveryverylongattributevalue"
@@ -182,18 +172,8 @@ exports[`bracketSameLine => true, xmlSelfClosingSpace => false 1`] = `
 
   <style />
   <style/>
-  <style type="text/css">
-circle {
-  stroke-opacity: 0.7;
-}
-.special circle {
-  stroke: green;
-}
-use {
-  stroke: purple;
-  fill: orange;
-}
-  </style>
+  <style type="text/css">circle { stroke-opacity: 0.7; } .special circle {
+  stroke: green; } use { stroke: purple; fill: orange; }</style>
 
   <yaml
     myveryveryveryverylongattributename="myveryveryveryverylongattributevalue"
@@ -259,18 +239,8 @@ exports[`defaults 1`] = `
 
   <style />
   <style/>
-  <style type="text/css">
-circle {
-  stroke-opacity: 0.7;
-}
-.special circle {
-  stroke: green;
-}
-use {
-  stroke: purple;
-  fill: orange;
-}
-  </style>
+  <style type="text/css">circle { stroke-opacity: 0.7; } .special circle {
+  stroke: green; } use { stroke: purple; fill: orange; }</style>
 
   <yaml
     myveryveryveryverylongattributename="myveryveryveryverylongattributevalue"
@@ -541,18 +511,8 @@ exports[`singleAttributePerLine => true 1`] = `
 
   <style />
   <style/>
-  <style type="text/css">
-circle {
-  stroke-opacity: 0.7;
-}
-.special circle {
-  stroke: green;
-}
-use {
-  stroke: purple;
-  fill: orange;
-}
-  </style>
+  <style type="text/css">circle { stroke-opacity: 0.7; } .special circle {
+  stroke: green; } use { stroke: purple; fill: orange; }</style>
 
   <yaml
     myveryveryveryverylongattributename="myveryveryveryverylongattributevalue"
@@ -628,18 +588,8 @@ exports[`xmlSelfClosingSpace => false 1`] = `
 
   <style />
   <style/>
-  <style type="text/css">
-circle {
-  stroke-opacity: 0.7;
-}
-.special circle {
-  stroke: green;
-}
-use {
-  stroke: purple;
-  fill: orange;
-}
-  </style>
+  <style type="text/css">circle { stroke-opacity: 0.7; } .special circle {
+  stroke: green; } use { stroke: purple; fill: orange; }</style>
 
   <yaml
     myveryveryveryverylongattributename="myveryveryveryverylongattributevalue"

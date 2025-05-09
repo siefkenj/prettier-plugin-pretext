@@ -208,7 +208,6 @@ export type Plugin = Omit<Prettier.Plugin<AnyNode>, "parsers" | "printers"> & {
 // We're overwriting the print function with a print function that accepts the
 // options we've defined.
 export type Printer = Omit<Prettier.Printer<AnyNode>, "embed" | "print"> & {
-    embed: Embed;
     print: (path: Path<AnyNode>, options: Options, print: Print) => Doc;
 };
 

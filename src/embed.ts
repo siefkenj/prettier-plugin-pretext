@@ -121,46 +121,9 @@ function getSource(content: ContentCtx) {
         .join("");
 }
 
-const embed: Embed = (path, print, textToDoc, opts) => {
-    const node = path.getValue();
-
-    // If the node isn't an element node, then skip
-    if (node.name !== "element") {
-        return null;
-    }
-
-    // If the name of the node does not correspond to the name of a parser that
-    // prettier knows about, then skip
-    const parser = getParser(node, opts);
-    if (!parser) {
-        return null;
-    }
-
-    // If the node does not actually contain content, or it contains any content
-    // that is not just plain text, then skip
-    const content = node.children.content[0].children;
-    if (Object.keys(content).length !== 1 || !content.chardata) {
-        return null;
-    }
-
-    // Get the open and close tags of this element, then return the properly
-    // formatted content enclosed within them
-    const nodePath = path as Path<typeof node>;
-    const { openTag, closeTag } = getElementTags(nodePath, opts, print);
-
-    return group([
-        openTag,
-        literalline,
-        dedentToRoot(
-            replaceNewlines(
-                utils.stripTrailingHardline(
-                    textToDoc(getSource(content), { ...opts, parser })
-                )
-            )
-        ),
-        hardline,
-        closeTag,
-    ]);
+const embed: Embed = (path, opts) => {
+    // Disable the embed
+    return null;
 };
 
 export default embed;
